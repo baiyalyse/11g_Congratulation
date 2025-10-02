@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>11 «Г» — Құттықтау</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Inter:wght@400;600&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:'Inter',sans-serif;
+      background:linear-gradient(135deg,#fff0f6 0%,#ffeaea 25%,#fff7f0 100%);
+      color:#3b2b2f;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:24px;
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    header{width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:16px}
+    h1{
+      font-family:'Playfair Display',serif;
+      font-size:2.4rem;
+      text-align:center;
+      color:#512b36;
+      letter-spacing:0.5px;
+      background:linear-gradient(90deg,#d35d7f,#b53a5e);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+    }
+
+    .lead{
+      font-size:1rem;
+      color:#6a4956;
+      text-align:center;
+      max-width:780px;
+    }
+
+    .btn{
+      background:linear-gradient(90deg,#ffccd8,#f8a7bb);
+      border:none;
+      padding:14px 26px;
+      border-radius:18px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow:0 6px 20px rgba(190,90,120,0.25);
+      color:#5d2134;
+      font-size:1.05rem;
+      transition:transform .2s ease;
+    }
+    .btn:hover{transform:scale(1.05)}
+    .btn:disabled{opacity:0.6;cursor:default}
+
+    .wrap{width:100%;max-width:720px;margin-top:20px}
+    .messages{display:flex;flex-direction:column;gap:12px;padding:12px}
+
+    .msg{
+      max-width:85%;padding:14px 16px;border-radius:18px;background:#ffffffa8;
+      backdrop-filter:blur(6px);
+      color:#42212f;font-weight:600;font-size:1rem;opacity:0;transform:translateY(18px);
+      transition:all 650ms cubic-bezier(.2,.9,.2,1);
+      box-shadow:0 8px 20px rgba(60,20,40,0.08);
+    }
+    .msg.left{align-self:flex-start;border-top-left-radius:6px}
+    .msg.right{align-self:flex-end;border-top-right-radius:6px;background:#ffe5ec}
+    .msg.visible{opacity:1;transform:translateY(0)}
+
+    .final{
+      margin-top:22px;background:linear-gradient(135deg,#ffe3ec,#fff0f6);
+      padding:20px;border-radius:20px;text-align:center;display:none;
+      color:#4b2432;font-weight:700;box-shadow:0 10px 24px rgba(200,130,150,0.15);
+    }
+    .final.visible{display:block;animation:fadeInUp 1000ms ease both}
+
+    .class-photo{width:100%;max-width:440px;margin:16px auto 0;border-radius:14px;display:block;box-shadow:0 10px 28px rgba(80,40,60,0.2)}
+
+    .ps{margin-top:10px;font-weight:600;color:#5b3947;font-style:italic}
+
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+
+    @media(max-width:520px){
+      h1{font-size:1.8rem}
+      .btn{width:92%}
+    }
+  </style>
+</head>
+<body>
+  <audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
+
+  <header>
+    <h1>Құрметті ұстаздарымыз! (11 «Г»)</h1>
+    <div class="lead">Біз — 11 «Г» сыныбы, осы шағын сайт арқылы сіздерге шын жүректен құттықтауымызды жолдаймыз. Батыл басыңыз — бәрі басталады.</div>
+    <button id="startBtn" class="btn">Біздің жүректен — ашу 💌</button>
+  </header>
+
+  <main class="wrap">
+    <div id="messages" class="messages"></div>
+
+    <div id="finalBlock" class="final">
+      <div>Махаббатпен, 11 «Г» 💖</div>
+      <img id="classImg" src="Img1.jpg" alt="Class photo" class="class-photo">
+      <div class="ps">Біз сіздерді бағалаймыз — әрқашан есте сақтаймыз.</div>
+    </div>
+  </main>
+
+  <script>
+    const wishes = [
+      "Валиева Ясмина: Құрметті ұстаздарымыз, сіздер бізге қанат бітірдіңіздер. Шексіз алғыс! 💖",
+      "Дуйсенбай Роман: Сіздер әрдайым шыдамдылықпен бізді жетеледіңіздер. Рақмет! 🌸",
+      "Леспек Асылай: Білім ғана емес, адамгершілікті де үйреткеніңіз үшін алғыс! ✨",
+      "Омаров Диас: Бізге үміт артып, сенім бергеніңіз үшін мың алғыс! 🙏",
+      "Саржан Ақберен: Сіздердің еңбектеріңіз біздің жүрегімізде мәңгі! 💕",
+      "Тастан Аяжан: Әр күніңіз шаттық пен берекеге толы болсын! 🌷",
+      "Адильбек Жания: Сіздерсіз болашағымызды елестету мүмкін емес. Рақмет! 🌺",
+      "Жаназак Даулет: Ұстаз — екінші ата-ана. Бізге жасаған қамқорлықтарыңызға тағзым! 🌟",
+      "Медетбек Ернар: Біздің әр жетістігіміз — сіздердің еңбектеріңіздің жемісі! 🏅",
+      "Мырзагали Нұрхан: Алла сіздерге денсаулық пен ұзақ өмір нәсіп етсін! 🤲",
+      "Нурлибаев Темирлан: Сіздерден үйренген білім — өмір бойы серігіміз. 📘",
+      "Ешенкулов Нурсултан: Сабырларыңыз бен даналықтарыңыз үшін үлкен рақмет! 🙌",
+      "Турар Аяулым: Ұстаздарымыз, сіздер бізге шабыт сыйлайсыздар! 🌼",
+      "Дуйсебек Акмаржан: Сіздердің мейірімдеріңізді ешқашан ұмытпаймыз! 💓",
+      "Әбдікалык Сұлтанғали: Сіздердің еңбектеріңіз — біздің болашағымыздың іргетасы! 🏛️",
+      "Турсынали Баймырза: Ұстазға деген құрмет — мәңгі жүректе! 💌",
+      "Адилкерей Аяжан: Сіздерге тек қуаныш пен бақ тілейміз! 🌞",
+      "Танирберген Ерболат: Сіздердің жылы сөздеріңіз бізді алға жетелейді. 💫",
+      "Муктарбек Нұрбану: Сіздер бізге тек пән емес, өмірді үйреттіңіздер! 🌹",
+      "Аскар Еркеназым: Алла разы болсын еңбектеріңізге! 🤍",
+      "Сатымбекова Бақжан: Ұстаз — мәңгілік шамшырақ. Біз сіздерді жақсы көреміз! 🕯️",
+      "Джарылқасым Зарина: Сіздер бізге әрқашан шабыт пен мейірім сыйлайсыздар. 🌸",
+      "Мулкибай Дархан: Біздің жетістігіміздің барлығы — сіздердің арқаларыңыз! 🏆",
+      "Сейлхан Назерке: Сіздердің еңбектеріңізді ешқашан ұмытпаймыз! ❤️"
+    ];
+
+    const startBtn = document.getElementById('startBtn');
+    const messagesWrap = document.getElementById('messages');
+    const music = document.getElementById('bgMusic');
+    const finalBlock = document.getElementById('finalBlock');
+
+    let idx = 0;
+    let left = true;
+
+    function playAndShow(){
+      startBtn.disabled = true;
+      try{ music.play(); }catch(e){}
+      showNext();
+    }
+
+    function showNext(){
+      if(idx >= wishes.length){
+        setTimeout(()=>{
+          finalBlock.classList.add('visible');
+          finalBlock.scrollIntoView({behavior:'smooth'});
+        }, 600);
+        return;
+      }
+
+      const text = wishes[idx];
+      const div = document.createElement('div');
+      div.className = 'msg ' + (left? 'left':'right');
+      div.textContent = text;
+      messagesWrap.appendChild(div);
+
+      requestAnimationFrame(()=> setTimeout(()=> div.classList.add('visible'), 20));
+
+      div.scrollIntoView({behavior:'smooth', block:'end'});
+
+      left = !left;
+      idx++;
+      setTimeout(showNext, 1200);
+    }
+
+    startBtn.addEventListener('click', playAndShow);
+
+    document.getElementById('classImg').addEventListener('error', function(){
+      this.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="640" height="420"><rect width="100%" height="100%" fill="%23ffecef"/><text x="50%" y="50%" font-size="20" dominant-baseline="middle" text-anchor="middle" fill="%236b3b47">Class photo (Img1.jpg)</text></svg>';
+    });
+  </script>
+</body>
+</html>
